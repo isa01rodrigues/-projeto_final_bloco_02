@@ -47,6 +47,11 @@ public class Produto {
 	@Size(max = 100, message = "O lote pode ter até 100 caracteres")
 	private String foto;
 	
+	@ManyToOne
+    @JsonIgnoreProperties("produto")
+    @JoinColumn(name = "categoria_id")
+    private Categoria categoria;
+	
  
 
 	public Long getId() {
@@ -111,6 +116,14 @@ public class Produto {
 
 	public void setFoto(String foto) {
 		this.foto = foto;
+	}
+
+	public Categoria getCategoria() {
+		return categoria;
+	}
+
+	public void setCategoria(Categoria categoria) {
+		this.categoria = categoria;
 	}
 	
 	
