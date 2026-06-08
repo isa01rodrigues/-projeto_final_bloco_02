@@ -27,6 +27,39 @@ public class Categoria {
 	@NotBlank (message = "O atributo nome é Obrigatório!")  //
 	@Size( max = 250, message = "o nome categoria pode ter até 100 caracteres")
 	private String foto;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getNome() {
+		return nome;
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
+
+	public String getDescricao() {
+		return descricao;
+	}
+
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+
+	public String getFoto() {
+		return foto;
+	}
+
+	public void setFoto(String foto) {
+		this.foto = foto;
+	}
+	
 	
 }
 
