@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.farmacia.farmacia.model.Produto;
+import com.farmacia.farmacia.repository.CategoriaRepository;
 import com.farmacia.farmacia.repository.ProdutoRepository;
 
 import jakarta.validation.Valid;
@@ -33,6 +34,9 @@ public class ProdutoController {
 	@Autowired
 	private ProdutoRepository produtoRepository;
 
+	@Autowired
+	private CategoriaRepository categoriaRepository;
+	
 	@GetMapping
 	public ResponseEntity<List<Produto>> getAll() {
 		return ResponseEntity.ok(produtoRepository.findAll());
@@ -76,21 +80,52 @@ public class ProdutoController {
 	@PostMapping
 	public ResponseEntity<Produto> post(@Valid @RequestBody Produto produto) {
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(produtoRepository.save(produto));
+	    if (categoriaRepository.existsById(
+	            produto.getCategoria().getId())) {
+
+	        produto.setId(null);
+
+	        Produto saved = produtoRepository.save(produto);
+
+	        return ResponseEntity
+	                .status(HttpStatus.CREATED)
+	                .body(saved);
+	    }
+
+	    throw new ResponseStatusException(
+	            HttpStatus.BAD_REQUEST,
+	            "Categoria não existe!",
+	            null
+	    );
 	}
 
 	// Atualizar
 	@PutMapping
-	public ResponseEntity<Produto> put(@Valid @RequestBody Produto produto) {
+	public ResponseEntity<Produto> put(
+	        @Valid @RequestBody Produto produto){
 
-		if (produtoRepository.existsById(produto.getId())) {
+	    if (produtoRepository.existsById(produto.getId())){
 
-			return ResponseEntity.ok(produtoRepository.save(produto));
-		}
+	        if (categoriaRepository
+	                .existsById(produto.getCategoria().getId()))
 
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado!");
+	            return ResponseEntity.status(HttpStatus.OK)
+	                    .body(produtoRepository.save(produto));
+
+	        throw new ResponseStatusException(
+	                HttpStatus.BAD_REQUEST,
+	                "Categoria não existe!",
+	                null
+	        );
+
+	    }
+
+	    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
 	}
 
+	
+	
 	// Deletar
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
